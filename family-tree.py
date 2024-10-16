@@ -4,6 +4,7 @@ class Node:
         self.left = None
         self.right = None
 
+# Insert the key either to the left or right of the root, depending on the side.
 def insert(root, key, side):
     if root is None:
         return Node(key)
@@ -13,6 +14,7 @@ def insert(root, key, side):
         root.right = insert(root.right, key, side)
     return root
 
+# The indents will increase as the number of generations increases.
 def print_tree(root, indent="", right=True):
     if root:
         print(indent, end="")
@@ -22,9 +24,7 @@ def print_tree(root, indent="", right=True):
         else:
             print("L--", end="")
             indent += "    "
-
         print(root.name)
-
         if root.left or root.right:
             print_tree(root.left, indent, False)
             print_tree(root.right, indent, True)
@@ -43,11 +43,9 @@ def print_ancestors(root, creature):
 class App:
     def __init__(self):
         self.root = None
-        self.creatures = []
 
     def add_root_creature(self, name):
         self.root = Node(name)
-        self.creatures.append(self.root)
 
     def add_creature(self, parent_name, child_name, side):
         parent_node = self.search(self.root, parent_name)
@@ -57,6 +55,7 @@ class App:
         else:
             print("That parent creature does not exist.")
 
+# Searching recursively, ideally only looking at half of the tree.
     def search(self, root, key):
         if root is None or root.name == key:
             return root
@@ -65,7 +64,6 @@ class App:
             return left_search
         return self.search(root.right, key)
 
-    # Fixed print_specific to print the ancestors of a creature
     def print_specific(self, creature_name):
         if not self.root:
             print("There aren't any creatures in the tree yet.")
