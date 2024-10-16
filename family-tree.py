@@ -3,9 +3,6 @@ class Node:
         self.name = name
         self.left = None
         self.right = None
-    
-    def info(self):
-        return self.name
 
 def insert(root, key, side):
     if root is None:
@@ -16,101 +13,111 @@ def insert(root, key, side):
         root.right = insert(root.right, key, side)
     return root
 
-def search(root, key):
-    if root is None or root.data == key:
-        return root
-    if key < root.data:
-        return search(root.left, key)
-    else:
-        return search(root.right, key)
-    
-def inOrderTraversal(root):
+def print_tree(root, indent="", right=True):
     if root:
-        inOrderTraversal(root.left)
-        print(root.data)
-        inOrderTraversal(root.right)
-    
-    
+        print(indent, end="")
+        if right:
+            print("R--", end="")
+            indent += "    "
+        else:
+            print("L--", end="")
+            indent += "    "
 
-# The menu() acts directly with the App class which calls relevant functions to create instances of classes. It also houses functions relevant to printing animal information.
+        print(root.name)
+
+        if root.left or root.right:
+            print_tree(root.left, indent, False)
+            print_tree(root.right, indent, True)
+
+def print_ancestors(root, creature):
+    if root is None:
+        return False
+    if root.name == creature:
+        return True
+    if print_ancestors(root.left, creature) or print_ancestors(root.right, creature):
+        print(root.name)
+        return True
+    return False
+
+
 class App:
-    # This list keeps track of all animal instances being made, regardless of their exact type (bear, elephant, penguin, or monkey).
     def __init__(self):
+        self.root = None
         self.creatures = []
 
-    # The 'animal' variable represents an object from the menu.
-    def add_creature(self, creature):
-        self.creatures.append(creature)
+    def add_root_creature(self, name):
+        self.root = Node(name)
+        self.creatures.append(self.root)
 
-    # Since the self.animals list contains objects, each 'animal' is a specific object while the 'animal_class' is the class type (Bear, Elephant, Penguin, Monkey), allowing us to call the info() method directly.
-    def print_specific(self, animal_class):
-        for animal in self.animals:
-            if isinstance(animal, animal_class):
-                print(animal.info())
-    
+    def add_creature(self, parent_name, child_name, side):
+        parent_node = self.search(self.root, parent_name)
+        if parent_node:
+            insert(parent_node, child_name, side)
+            print(f"{child_name.upper()} has been added to the tree.")
+        else:
+            print("That parent creature does not exist.")
+
+    def search(self, root, key):
+        if root is None or root.name == key:
+            return root
+        left_search = self.search(root.left, key)
+        if left_search is not None:
+            return left_search
+        return self.search(root.right, key)
+
+    # Fixed print_specific to print the ancestors of a creature
+    def print_specific(self, creature_name):
+        if not self.root:
+            print("There aren't any creatures in the tree yet.")
+            return
+        print(f"Ancestors of {creature_name}:")
+        if not print_ancestors(self.root, creature_name):
+            print(f"{creature_name} does not exist in the tree.")
+
     def print_all(self):
-        for animal in self.animals:
-            print(animal.info())
-
+        if self.root:
+            print_tree(self.root)
+        else:
+            print("There aren't any creatures in the tree yet.")
 
 def menu():
     app = App()
 
-    while len(app.creatures) == 0:
+    while True:
         print()
         print('======= Menu =======')
         print('1) Add Root Creature')
+        print('2) Add Creature')
+        print('3) Print All')
+        print("4) Print A Creature's Ancestors")
         print('0) Exit')
         print('====================')
-        selection = input('Enter 1 to add a creature. ')
+        selection = input('Choose an option: ')
 
         if selection == '1':
-            name = input('What\'s the creature\'s name? ')
-            app.add_creature(Node(name))
-        elif selection == '0':
-            break
-        else:
-            print('Invalid input.')
-
-    while len(app.creatures) > 0:
-        print()
-        print('======= Menu =====')
-        print('1) Add Creature')
-        print('2) Print All')
-        print('3) Print Specific')
-        print('0) Exit')
-        print('==================')
-        selection = input('Choose an option. ')
-
-        if selection == '1':
-            parent = input('What\'s the parent\'s name: ')
-            parent_found = False
-            for creature in app.creatures:
-                if creature.name == parent:
-                    parent_found = True
-                    leftOrRight = input('Input L or R child: ').upper()
-                    if leftOrRight == 'L' or leftOrRight == 'R':
-                        name = input('What\'s the creature\'s name? ')
-                        # for creature in app.creatures:
-                        #     if creature.name == parent:
-                        root = creature
-                        insert(root, name, leftOrRight)
-                        print(f"{name.upper()} has been added to the tree.")
-                    else:
-                        print('Invalid input.')
-                    app.add_creature(Node(name))
-            if not parent_found:
-                print('That parent creature does not exist.')
+            name = input("What's the root creature's name? ")
+            app.add_root_creature(name)
 
         elif selection == '2':
-            inOrderTraversal(app.creatures[0])
+            parent = input("What's the parent's name? ")
+            name = input("What's the creature's name? ")
+            side = input("Input L or R child: ").upper()
+            if side in ['L', 'R']:
+                app.add_creature(parent, name, side)
+            else:
+                print("Invalid side input. Use 'L' or 'R.'")
+
+        elif selection == '3':
+            app.print_all()
+
+        elif selection == '4':
+            creature = input("Enter the creature's name: ")
+            app.print_specific(creature)
+
         elif selection == '0':
             break
         else:
-            print('Invalid input.')
-    
+            print("Invalid input.")
+
 # =================================================
 menu()
-
-
-# need to work on the two print functions starting from the top
