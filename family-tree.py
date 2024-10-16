@@ -24,6 +24,12 @@ def search(root, key):
     else:
         return search(root.right, key)
     
+def inOrderTraversal(root):
+    if root:
+        inOrderTraversal(root.left)
+        print(root.data)
+        inOrderTraversal(root.right)
+    
     
 
 # The menu() acts directly with the App class which calls relevant functions to create instances of classes. It also houses functions relevant to printing animal information.
@@ -46,7 +52,6 @@ class App:
         for animal in self.animals:
             print(animal.info())
 
-# need to look into the add_creature function from the start and move down from there
 
 def menu():
     app = App()
@@ -62,8 +67,6 @@ def menu():
         if selection == '1':
             name = input('What\'s the creature\'s name? ')
             app.add_creature(Node(name))
-            for creature in app.creatures:
-                print(creature.info())
         elif selection == '0':
             break
         else:
@@ -77,23 +80,30 @@ def menu():
         print('3) Print Specific')
         print('0) Exit')
         print('==================')
-        selection = input('Enter 1 to add a creature. ')
+        selection = input('Choose an option. ')
 
         if selection == '1':
             parent = input('What\'s the parent\'s name: ')
-            leftOrRight = input('Input L or R child: ').upper()
-            if leftOrRight == 'L' or leftOrRight == 'R':
-                name = input('What\'s the creature\'s name? ')
-                for creature in app.creatures:
-                    if creature.name == parent:
+            parent_found = False
+            for creature in app.creatures:
+                if creature.name == parent:
+                    parent_found = True
+                    leftOrRight = input('Input L or R child: ').upper()
+                    if leftOrRight == 'L' or leftOrRight == 'R':
+                        name = input('What\'s the creature\'s name? ')
+                        # for creature in app.creatures:
+                        #     if creature.name == parent:
                         root = creature
                         insert(root, name, leftOrRight)
                         print(f"{name.upper()} has been added to the tree.")
-            else:
-                print('Invalid input.')
-            app.add_creature(Node(name))
-            # for creature in app.creatures:
-            #     print(creature.info())
+                    else:
+                        print('Invalid input.')
+                    app.add_creature(Node(name))
+            if not parent_found:
+                print('That parent creature does not exist.')
+
+        elif selection == '2':
+            inOrderTraversal(app.creatures[0])
         elif selection == '0':
             break
         else:
@@ -101,3 +111,6 @@ def menu():
     
 # =================================================
 menu()
+
+
+# need to work on the two print functions starting from the top
