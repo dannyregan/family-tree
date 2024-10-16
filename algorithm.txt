@@ -1,0 +1,4 @@
+The menu function creates an instance of the app, which hosts important methods, and loops through the printed menu indefinitely. In the menu function is where data like names are gathered. The menu then calls other functions in the App class.
+The App class manages the functionality of the app as a whole. It acts as an intermediary between the printed menu and the instances of nodes, allowing the user to access node-specific information from the menu.
+The Node class handles all instances of nodes. It stores there name and who their children are. This information is used by other methods to handle functionality like printing ancestory. 
+
